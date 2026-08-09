@@ -193,8 +193,8 @@
         </ul>
 
         <div class="nav-actions">
-          <a href="/pages/dashboard.html" class="nav-link" style="padding: 0; font-weight: 600;">Log In</a>
-          <a href="/pages/courses.html" class="btn btn-primary"><span>Get Started</span></a>
+          <a href="/pages/login.html" class="nav-link" style="padding: 0; font-weight: 600;">Log In</a>
+          <a href="/pages/register.html" class="btn btn-primary"><span>Get Started</span></a>
         </div>
 
         <button class="mobile-nav-toggle" aria-label="Toggle navigation">
@@ -215,8 +215,8 @@
         <li><a href="/#pricing" class="mobile-nav-link">Pricing</a></li>
       </ul>
       <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
-        <a href="/pages/dashboard.html" class="btn btn-secondary" style="width: 100%;">Log In</a>
-        <a href="/pages/courses.html" class="btn btn-primary" style="width: 100%;">Get Started</a>
+        <a href="/pages/login.html" class="btn btn-secondary" style="width: 100%;">Log In</a>
+        <a href="/pages/register.html" class="btn btn-primary" style="width: 100%;">Get Started</a>
       </div>
     </div>
 
@@ -240,6 +240,10 @@
         <div class="catalog-grid-layout">
           <!-- Sidebar Filters -->
           <aside class="filter-sidebar reveal" data-delay="200">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+              <span style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: #FFF;">Filters</span>
+              <button id="sidebar-reset-filters" style="background: none; border: none; color: var(--secondary-color); font-size: 0.825rem; font-weight: 600; cursor: pointer; padding: 0;">Clear All</button>
+            </div>
             <!-- Filter Group 1 -->
             <div class="filter-group">
               <h3 class="filter-title">Topic Dimensions</h3>
@@ -277,12 +281,29 @@
                 Advanced Track
               </label>
             </div>
+
+            <!-- Filter Group 3: Duration Filter -->
+            <div class="filter-group">
+              <h3 class="filter-title">Program Duration</h3>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox duration-filter" value="short" />
+                Short (&lt; 5 hours)
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox duration-filter" value="medium" />
+                Medium (5 - 15 hours)
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox duration-filter" value="long" />
+                Long (&gt; 15 hours)
+              </label>
+            </div>
           </aside>
 
           <!-- Core Catalog List -->
           <div class="catalog-main reveal" data-delay="250">
             <div class="catalog-header">
-              <div class="catalog-count">Showing <span id="displayed-count">6</span> of <span id="total-count">6</span> programs</div>
+              <div class="catalog-count">Showing <span id="displayed-count">8</span> of <span id="total-count">8</span> programs</div>
               <select id="catalog-sort" class="sort-select">
                 <option value="popular">Most Popular</option>
                 <option value="price-low">Price: Low to High</option>
@@ -293,6 +314,11 @@
             <!-- Dynamically Rendered course list grid -->
             <div class="course-grid" id="catalog-course-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
               <!-- Handled dynamically by js/courses.js -->
+            </div>
+
+            <!-- Pagination Container -->
+            <div id="catalog-pagination" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 3rem;">
+              <!-- Pagination controls injected by js/courses.js -->
             </div>
           </div>
         </div>

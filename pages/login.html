@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login • LearnSphere</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .auth-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6rem 2rem 3rem 2rem;
+        position: relative;
+        z-index: 2;
+      }
+      .auth-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        max-width: 1080px;
+        width: 100%;
+        align-items: center;
+      }
+      /* Glassmorphism Card */
+      .glass-auth-card {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 3rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+      .glass-auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .input-icon {
+        position: absolute;
+        left: 1.1rem;
+        color: var(--text-secondary);
+        pointer-events: none;
+        transition: var(--transition-fast);
+      }
+      .form-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 0.9rem 1rem 0.9rem 3rem;
+        color: #FFF;
+        font-family: var(--font-main);
+        font-size: 0.95rem;
+        transition: var(--transition-fast);
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: var(--secondary-color);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+      }
+      .form-input:focus + .input-icon {
+        color: var(--secondary-light);
+      }
+      .toggle-password-btn {
+        position: absolute;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .toggle-password-btn:hover {
+        color: #FFF;
+      }
+      /* Custom Checkbox & Options */
+      .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+      }
+      .remember-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+      }
+      .remember-checkbox input {
+        accent-color: var(--secondary-color);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+      .forgot-link {
+        color: var(--secondary-light);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition-fast);
+      }
+      .forgot-link:hover {
+        text-decoration: underline;
+      }
+      /* Social Login Buttons */
+      .social-divider {
+        display: flex;
+        align-items: center;
+        margin: 1.75rem 0;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .social-divider::before, .social-divider::after {
+        content: '';
+        flex-grow: 1;
+        height: 1px;
+        background: var(--border-color);
+      }
+      .social-divider span {
+        padding: 0 1rem;
+      }
+      .social-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: #FFF;
+        cursor: pointer;
+        transition: var(--transition-fast);
+      }
+      .social-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      /* Animated Illustration Area */
+      .auth-illustration-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+      }
+      .orbital-container {
+        width: 320px;
+        height: 320px;
+        position: relative;
+        margin-bottom: 2rem;
+      }
+      .orbital-core {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--secondary-color) 0%, var(--primary-color) 100%);
+        box-shadow: 0 0 50px rgba(6, 182, 212, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFF;
+        animation: pulseCore 3s ease-in-out infinite alternate;
+      }
+      @keyframes pulseCore {
+        0% { transform: translate(-50%, -50%) scale(0.95); box-shadow: 0 0 30px rgba(6, 182, 212, 0.4); }
+        100% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 70px rgba(79, 70, 229, 0.8); }
+      }
+      .orbital-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 1px stroke rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+      }
+      .ring-1 {
+        width: 200px;
+        height: 200px;
+        border: 1px dashed rgba(6, 182, 212, 0.3);
+        animation: spinRight 20s linear infinite;
+      }
+      .ring-2 {
+        width: 280px;
+        height: 280px;
+        border: 1px solid rgba(79, 70, 229, 0.25);
+        animation: spinLeft 25s linear infinite;
+      }
+      @keyframes spinRight { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+      @keyframes spinLeft { from { transform: translate(-50%, -50%) rotate(360deg); } to { transform: translate(-50%, -50%) rotate(0deg); } }
+
+      .orbital-node {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: #FFF;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #FFF;
+      }
+      .node-1 { top: -7px; left: 50%; }
+      .node-2 { bottom: -7px; right: 50%; }
+
+      @media (max-width: 868px) {
+        .auth-container { grid-template-columns: 1fr; }
+        .auth-illustration-wrap { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loader-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+        </svg>
+        <span>LearnSphere</span>
+      </div>
+      <div class="loader-bar-container">
+        <div class="loader-bar"></div>
+      </div>
+    </div>
+
+    <!-- Background meshes -->
+    <div class="bg-mesh-glow">
+      <div class="mesh-circle-1"></div>
+      <div class="mesh-circle-2"></div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav id="navbar" class="navbar">
+      <div class="container nav-container">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+            </svg>
+          </div>
+          <span class="logo-text">Learn<span>Sphere</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/pages/courses.html" class="nav-link">Courses</a></li>
+          <li><a href="/pages/dashboard.html" class="nav-link">Dashboard</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a href="/pages/register.html" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;">Create Account</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Authentication Section -->
+    <section class="auth-section">
+      <div class="auth-container">
+        
+        <!-- Left: Glassmorphism Login Card -->
+        <div class="glass-auth-card reveal" data-delay="100">
+          <div style="margin-bottom: 2rem;">
+            <h1 style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #FFF; margin-bottom: 0.5rem;">Welcome Back</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Access your LearnSphere academic portal & terminal sandbox.</p>
+          </div>
+
+          <form id="login-form">
+            <!-- Email Input -->
+            <div class="form-group">
+              <label class="form-label" for="login-email">Email Address</label>
+              <div class="input-wrapper">
+                <input type="email" id="login-email" class="form-input" required placeholder="jane.doe@learnsphere.edu" value="jane.doe@learnsphere.edu" />
+                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+              <label class="form-label" for="login-password">Password</label>
+              <div class="input-wrapper">
+                <input type="password" id="login-password" class="form-input" required placeholder="••••••••••••" value="demo123456" />
+                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <button type="button" class="toggle-password-btn" id="toggle-pwd-btn" aria-label="Toggle password visibility">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Form Options (Remember Me & Forgot Password) -->
+            <div class="form-options">
+              <label class="remember-checkbox">
+                <input type="checkbox" checked />
+                <span>Remember me for 30 days</span>
+              </label>
+              <a href="#" class="forgot-link" id="forgot-password-trigger">Forgot Password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; padding: 0.9rem; font-size: 0.95rem;">
+              <span>Authenticate & Enter Portal</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+
+          <!-- Social Login Buttons -->
+          <div class="social-divider">
+            <span>Or continue with</span>
+          </div>
+
+          <div class="social-grid">
+            <button class="social-btn" aria-label="Google Login">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.24 10.285V13.4h6.887c-.283 1.83-2.023 5.35-6.887 5.35-4.148 0-7.53-3.433-7.53-7.668 0-4.236 3.382-7.668 7.53-7.668 2.36 0 3.937.995 4.84 1.856l2.457-2.458C17.96 1.34 15.342 0 12.24 0 5.48 0 0 5.48 0 12.24s5.48 12.24 12.24 12.24c7.062 0 11.758-4.966 11.758-11.966 0-.803-.086-1.41-.194-2.23H12.24z"/></svg>
+            </button>
+            <button class="social-btn" aria-label="GitHub Login">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </button>
+            <button class="social-btn" aria-label="Apple Login">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.32c.67-.82 1.13-1.97.99-3.12-.98.04-2.17.65-2.87 1.47-.62.72-1.16 1.89-1.01 3.02 1.09.08 2.22-.55 2.89-1.37z"/></svg>
+            </button>
+          </div>
+
+          <p style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-top: 2rem;">
+            Don't have an account? <a href="/pages/register.html" style="color: var(--secondary-light); font-weight: 600;">Register Now</a>
+          </p>
+        </div>
+
+        <!-- Right: Animated Orbital Graphic -->
+        <div class="auth-illustration-wrap reveal" data-delay="200">
+          <div class="orbital-container">
+            <div class="orbital-ring ring-1">
+              <div class="orbital-node node-1"></div>
+            </div>
+            <div class="orbital-ring ring-2">
+              <div class="orbital-node node-2"></div>
+            </div>
+            <div class="orbital-core">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+          </div>
+          
+          <h3 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: #FFF; margin-bottom: 0.5rem;">Secure Quantum Vault</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; max-width: 320px; line-height: 1.5;">
+            Zero-Trust Encrypted Workspace • Direct Terminal Execution & Cloud Labs.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgot-modal">
+      <div class="modal-content" style="max-width: 440px;">
+        <div class="modal-header">
+          <h3 style="font-family: var(--font-display); font-weight: 700;">Reset Account Credentials</h3>
+          <button class="modal-close" id="forgot-modal-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Enter your verified academic email address to receive a secure password reset token.</p>
+          <form id="reset-password-form">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" required class="form-input" placeholder="student@learnsphere.edu" style="padding-left: 1rem;" />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 1rem;">Send Reset Magic Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+      document.addEventListener('DOMContentLoaded', () => {
+        // Toggle Password Visibility
+        const togglePwdBtn = document.getElementById('toggle-pwd-btn');
+        const pwdInput = document.getElementById('login-password');
+
+        if (togglePwdBtn && pwdInput) {
+          togglePwdBtn.addEventListener('click', () => {
+            const isPwd = pwdInput.type === 'password';
+            pwdInput.type = isPwd ? 'text' : 'password';
+            togglePwdBtn.innerHTML = isPwd 
+              ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+              : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+          });
+        }
+
+        // Login Submission
+        const loginForm = document.getElementById('login-form');
+        const submitBtn = document.getElementById('login-submit-btn');
+
+        if (loginForm && submitBtn) {
+          loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('login-email');
+            const emailVal = emailInput ? emailInput.value : 'jane.doe@learnsphere.edu';
+            
+            let nameVal = 'Jane Doe';
+            if (emailVal && emailVal.includes('@')) {
+              const localPart = emailVal.split('@')[0];
+              const nameParts = localPart.split(/[\._\-]/).filter(Boolean);
+              if (nameParts.length >= 2) {
+                nameVal = nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+              } else if (nameParts.length === 1) {
+                nameVal = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+              }
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span>Verifying Tokens...</span>`;
+
+            setTimeout(() => {
+              submitBtn.style.background = '#10B981';
+              submitBtn.innerHTML = `<span>Authenticated! Redirecting...</span>`;
+
+              if (window.setAuthUser) {
+                window.setAuthUser({ name: nameVal, email: emailVal });
+              } else {
+                localStorage.setItem('learnsphere_user', JSON.stringify({ name: nameVal, email: emailVal, isLoggedIn: true }));
+              }
+
+              setTimeout(() => {
+                window.location.href = '/pages/dashboard.html';
+              }, 800);
+            }, 1000);
+          });
+        }
+
+        // Forgot password modal
+        const forgotTrigger = document.getElementById('forgot-password-trigger');
+        const forgotModal = document.getElementById('forgot-modal');
+        const forgotClose = document.getElementById('forgot-modal-close');
+        const resetForm = document.getElementById('reset-password-form');
+
+        if (forgotTrigger && forgotModal) {
+          forgotTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotModal.classList.add('active');
+          });
+        }
+
+        if (forgotClose && forgotModal) {
+          forgotClose.addEventListener('click', () => forgotModal.classList.remove('active'));
+          forgotModal.addEventListener('click', (e) => {
+            if (e.target === forgotModal) forgotModal.classList.remove('active');
+          });
+        }
+
+        if (resetForm) {
+          resetForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Password reset link dispatched to your inbox!');
+            if (forgotModal) forgotModal.classList.remove('active');
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

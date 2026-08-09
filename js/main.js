@@ -4,6 +4,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initNavbarAuth();
+  initRouteGuards();
   initLoadingScreen();
   initMouseGlow();
   initStickyNavbar();
@@ -457,6 +459,163 @@ function initNewsletterForm() {
   });
 }
 
+/* --- 13. Auth & Session State Engine --- */
+const AUTH_KEY = 'learnsphere_user';
+
+function getAuthUser() {
+  try {
+    const data = localStorage.getItem(AUTH_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error('Error reading auth state:', e);
+    return null;
+  }
+}
+
+function setAuthUser(user) {
+  try {
+    const userData = {
+      name: user.name || 'Jane Doe',
+      email: user.email || 'jane.doe@learnsphere.edu',
+      isLoggedIn: true,
+      loginTime: new Date().toISOString()
+    };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+    return userData;
+  } catch (e) {
+    console.error('Error setting auth state:', e);
+  }
+}
+
+function logoutUser() {
+  try {
+    localStorage.removeItem(AUTH_KEY);
+  } catch (e) {
+    console.error('Error clearing auth state:', e);
+  }
+  window.location.href = '/pages/login.html';
+}
+
+function getInitials(name) {
+  if (!name) return 'JD';
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
+function initNavbarAuth() {
+  const user = getAuthUser();
+  const isLoggedIn = user && user.isLoggedIn;
+
+  // 1. Conditionally hide/show Dashboard navbar links in header/mobile menus
+  const dashboardNavLinks = document.querySelectorAll('a[href*="dashboard.html"]');
+  dashboardNavLinks.forEach(link => {
+    // Exclude links inside .nav-actions or mobile action buttons which are handled separately
+    if (link.closest('.nav-actions') || link.classList.contains('btn')) return;
+    
+    const parentLi = link.closest('li');
+    if (isLoggedIn) {
+      if (parentLi) parentLi.style.display = '';
+      else link.style.display = '';
+    } else {
+      if (parentLi) parentLi.style.display = 'none';
+      else link.style.display = 'none';
+    }
+  });
+
+  // 2. Render desktop .nav-actions container
+  const navActionsContainers = document.querySelectorAll('.nav-actions');
+  navActionsContainers.forEach(container => {
+    if (isLoggedIn) {
+      const initials = getInitials(user.name);
+      container.innerHTML = `
+        <a href="/pages/dashboard.html" class="nav-link" id="user-profile-btn" style="padding: 0; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--secondary-color); color: var(--bg-color); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">${initials}</div>
+          <span>${user.name}</span>
+        </a>
+        <button class="btn btn-secondary logout-trigger-btn" style="padding: 0.45rem 1rem; font-size: 0.85rem; cursor: pointer;">Sign Out</button>
+      `;
+    } else {
+      container.innerHTML = `
+        <a href="/pages/login.html" class="nav-link" style="padding: 0; font-weight: 600;">Log In</a>
+        <a href="/pages/register.html" class="btn btn-primary"><span>Get Started</span></a>
+      `;
+    }
+  });
+
+  // 3. Render mobile menu action area
+  const mobileMenus = document.querySelectorAll('.mobile-menu');
+  mobileMenus.forEach(menu => {
+    const actionBox = menu.querySelector('div[style*="flex-direction: column"]');
+    if (actionBox) {
+      if (isLoggedIn) {
+        actionBox.innerHTML = `
+          <a href="/pages/dashboard.html" class="btn btn-primary" style="width: 100%;">Dashboard (${user.name})</a>
+          <button class="btn btn-secondary logout-trigger-btn" style="width: 100%; cursor: pointer;">Sign Out</button>
+        `;
+      } else {
+        actionBox.innerHTML = `
+          <a href="/pages/login.html" class="btn btn-secondary" style="width: 100%;">Log In</a>
+          <a href="/pages/register.html" class="btn btn-primary" style="width: 100%;">Get Started</a>
+        `;
+      }
+    }
+  });
+
+  // Attach logout listeners
+  document.querySelectorAll('.logout-trigger-btn, .logout-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      logoutUser();
+    });
+  });
+}
+
+function updateDashboardUserDisplays(user) {
+  if (!user || !user.name) return;
+  const firstName = user.name.trim().split(' ')[0] || user.name;
+  
+  const welcomeEl = document.getElementById('dash-welcome-name');
+  if (welcomeEl) welcomeEl.textContent = firstName;
+
+  const certUserEl = document.getElementById('cert-modal-user-name');
+  if (certUserEl) certUserEl.textContent = user.name;
+
+  const userNameDisplays = document.querySelectorAll('.dash-user-name, #welcome-user-name');
+  userNameDisplays.forEach(el => {
+    el.textContent = user.name;
+  });
+}
+
+function initRouteGuards() {
+  const currentPath = window.location.pathname;
+  const user = getAuthUser();
+  const isLoggedIn = user && user.isLoggedIn;
+
+  // Guard Dashboard: requires logged in user
+  if (currentPath.includes('/pages/dashboard.html')) {
+    if (!isLoggedIn) {
+      window.location.href = '/pages/login.html';
+      return;
+    }
+
+    // Update dashboard user name displays if present
+    updateDashboardUserDisplays(user);
+  }
+
+  // Redirect logged in users away from login/register back to dashboard
+  if (isLoggedIn && (currentPath.includes('/pages/login.html') || currentPath.includes('/pages/register.html'))) {
+    window.location.href = '/pages/dashboard.html';
+  }
+}
+
 // Global exposure for dynamic module calling
 window.createCheckoutModal = createCheckoutModal;
+window.getAuthUser = getAuthUser;
+window.setAuthUser = setAuthUser;
+window.logoutUser = logoutUser;
+window.initNavbarAuth = initNavbarAuth;
+window.updateDashboardUserDisplays = updateDashboardUserDisplays;
 

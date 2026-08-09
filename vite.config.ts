@@ -14,7 +14,10 @@ export default defineConfig(() => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           courses: path.resolve(__dirname, 'pages/courses.html'),
+          courseDetails: path.resolve(__dirname, 'pages/course-details.html'),
           dashboard: path.resolve(__dirname, 'pages/dashboard.html'),
+          login: path.resolve(__dirname, 'pages/login.html'),
+          register: path.resolve(__dirname, 'pages/register.html'),
         }
       }
     }
