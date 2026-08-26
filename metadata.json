@@ -1,0 +1,6 @@
+{
+  "name": "LearnSphere",
+  "description": "A premium SaaS-quality Online Learning Platform built with Vanilla HTML, CSS, and JavaScript, featuring glassmorphism, responsive sections, and smooth micro-interactions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

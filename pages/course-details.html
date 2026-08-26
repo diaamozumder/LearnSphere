@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Details • LearnSphere</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      /* Course Details Layout */
+      .details-hero {
+        padding-top: 7.5rem;
+        padding-bottom: 3.5rem;
+        background: linear-gradient(180deg, rgba(14, 21, 37, 0.8) 0%, rgba(11, 17, 32, 1) 100%);
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        z-index: 2;
+      }
+      .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 3rem;
+        position: relative;
+      }
+      .details-hero-content {
+        max-width: 100%;
+      }
+      .details-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+      .details-breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition-fast);
+      }
+      .details-breadcrumb a:hover {
+        color: var(--secondary-light);
+      }
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #FFF;
+        margin-bottom: 1rem;
+      }
+      .hero-description {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+      .hero-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+      }
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .instructor-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .instructor-pill img {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+      }
+      
+      /* Main Content Sections */
+      .details-main-section {
+        padding-top: 3rem;
+        padding-bottom: 6rem;
+        position: relative;
+        z-index: 2;
+      }
+      .content-block {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+      }
+      .block-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #FFF;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      /* Preview Video Block */
+      .video-preview-wrapper {
+        position: relative;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        background: #000;
+        aspect-ratio: 16 / 9;
+        margin-bottom: 2rem;
+      }
+      .video-preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.7;
+        transition: var(--transition-smooth);
+      }
+      .video-preview-wrapper:hover .video-preview-img {
+        opacity: 0.85;
+        transform: scale(1.02);
+      }
+      .video-overlay-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: rgba(6, 182, 212, 0.9);
+        color: var(--bg-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+        transition: var(--transition-fast);
+      }
+      .video-overlay-btn:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+        background: #FFF;
+      }
+
+      /* Skills Grid */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .skill-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+        color: #E2E8F0;
+        line-height: 1.5;
+      }
+      .skill-icon {
+        color: var(--secondary-color);
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      /* Accordion styling */
+      .accordion-item {
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.01);
+      }
+      .accordion-header {
+        width: 100%;
+        padding: 1.25rem 1.5rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: none;
+        color: #FFF;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--font-main);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        transition: var(--transition-fast);
+      }
+      .accordion-header:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .accordion-content {
+        padding: 0 1.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), padding 0.35s ease;
+      }
+      .accordion-item.active .accordion-content {
+        padding: 1.25rem 1.5rem;
+        max-height: 500px;
+        border-top: 1px solid var(--border-color);
+      }
+      .accordion-icon {
+        transition: transform 0.3s ease;
+      }
+      .accordion-item.active .accordion-icon {
+        transform: rotate(180deg);
+      }
+      .lesson-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+      }
+      .lesson-row:last-child {
+        border-bottom: none;
+      }
+
+      /* Instructor Card */
+      .instructor-card {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+      .instructor-avatar-lg {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--secondary-color);
+        flex-shrink: 0;
+      }
+
+      /* Reviews section */
+      .rating-breakdown-box {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 2rem;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      .rating-num-lg {
+        font-family: var(--font-display);
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #FFF;
+        line-height: 1;
+      }
+      .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+      .bar-bg {
+        flex-grow: 1;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--secondary-color);
+      }
+      .review-card {
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem 0;
+      }
+      .review-card:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      /* Sticky Enroll Card */
+      .sticky-sidebar {
+        position: sticky;
+        top: 6rem;
+        height: fit-content;
+      }
+      .enroll-card {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.75rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      }
+      .enroll-price-box {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .price-main {
+        font-family: var(--font-display);
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #FFF;
+      }
+      .price-old {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        text-decoration: line-through;
+      }
+      .price-discount-badge {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #F87171;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+      }
+      .feature-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.75rem;
+      }
+      
+      @media (max-width: 992px) {
+        .details-grid {
+          grid-template-columns: 1fr;
+        }
+        .sticky-sidebar {
+          position: relative;
+          top: 0;
+          margin-bottom: 2rem;
+        }
+        .skills-grid {
+          grid-template-columns: 1fr;
+        }
+        .rating-breakdown-box {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loader-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+        </svg>
+        <span>LearnSphere</span>
+      </div>
+      <div class="loader-bar-container">
+        <div class="loader-bar"></div>
+      </div>
+    </div>
+
+    <!-- Background meshes -->
+    <div class="bg-mesh-glow">
+      <div class="mesh-circle-1"></div>
+      <div class="mesh-circle-2"></div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav id="navbar" class="navbar">
+      <div class="container nav-container">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+            </svg>
+          </div>
+          <span class="logo-text">Learn<span>Sphere</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/pages/courses.html" class="nav-link active">Courses</a></li>
+          <li><a href="/pages/dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="/#why-us" class="nav-link">Why LearnSphere</a></li>
+          <li><a href="/#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a href="/pages/login.html" class="nav-link" style="padding: 0; font-weight: 600;">Log In</a>
+          <a href="/pages/register.html" class="btn btn-primary"><span>Get Started</span></a>
+        </div>
+
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+      <ul class="mobile-nav-links">
+        <li><a href="/" class="mobile-nav-link">Home</a></li>
+        <li><a href="/pages/courses.html" class="mobile-nav-link active">Courses</a></li>
+        <li><a href="/pages/dashboard.html" class="mobile-nav-link">Dashboard</a></li>
+        <li><a href="/#why-us" class="mobile-nav-link">Why LearnSphere</a></li>
+        <li><a href="/#pricing" class="mobile-nav-link">Pricing</a></li>
+      </ul>
+      <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+        <a href="/pages/login.html" class="btn btn-secondary" style="width: 100%;">Log In</a>
+        <a href="/pages/register.html" class="btn btn-primary" style="width: 100%;">Get Started</a>
+      </div>
+    </div>
+
+    <!-- Hero Header -->
+    <section class="details-hero">
+      <div class="container">
+        <div class="details-breadcrumb">
+          <a href="/">Home</a>
+          <span>/</span>
+          <a href="/pages/courses.html">Syllabus Track</a>
+          <span>/</span>
+          <span id="breadcrumb-course-title" style="color: #FFF;">Advanced Generative AI</span>
+        </div>
+
+        <div class="details-grid">
+          <!-- Left Hero Details -->
+          <div class="details-hero-content">
+            <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;">
+              <span class="badge" id="course-category-badge">Artificial Intelligence</span>
+              <span class="course-level intermediate" id="course-level-badge">Intermediate Track</span>
+            </div>
+
+            <h1 class="hero-title" id="course-main-title">Advanced Generative AI & Prompt Architectures</h1>
+            <p class="hero-description" id="course-main-desc">
+              Master modern Large Language Model architectures, zero-shot and few-shot prompt design, LoRA fine-tuning, and RAG retrieval pipelines in isolated browser sandboxes.
+            </p>
+
+            <div class="hero-meta-row">
+              <div class="meta-item">
+                <div style="display: flex; color: #F59E0B; gap: 2px;">★ ★ ★ ★ ★</div>
+                <strong style="color: #FFF;" id="course-rating-val">4.9</strong>
+                <span id="course-rating-count">(1,420 ratings)</span>
+              </div>
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span id="course-students-count">12,450 Scholars Enrolled</span>
+              </div>
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span id="course-duration-val">18.5 Total Hours</span>
+              </div>
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+                <span>English (Subtitles Included)</span>
+              </div>
+            </div>
+
+            <div class="instructor-pill">
+              <img id="instructor-img" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop" alt="Dr. Evelyn Thorne" />
+              <div>
+                <span style="font-size: 0.75rem; color: var(--text-secondary); display: block;">Created by</span>
+                <span style="font-weight: 700; color: #FFF; font-size: 0.95rem;" id="instructor-name">Dr. Evelyn Thorne</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty right column to balance grid for sticky card -->
+          <div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content & Sticky Sidebar Grid -->
+    <section class="details-main-section">
+      <div class="container">
+        <div class="details-grid">
+          
+          <!-- LEFT COLUMN: COURSE SECTIONS -->
+          <div>
+            
+            <!-- SECTION 1: PREVIEW VIDEO -->
+            <div class="content-block">
+              <h2 class="block-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Program Interactive Preview
+              </h2>
+              <div class="video-preview-wrapper" id="preview-video-trigger">
+                <img id="course-preview-thumb" src="https://images.unsplash.com/photo-1677442136019-21780efad99a?q=80&w=600&auto=format&fit=crop" alt="Course Preview" class="video-preview-img" />
+                <button class="video-overlay-btn" id="play-preview-btn">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- SECTION 2: SKILLS YOU'LL LEARN -->
+            <div class="content-block">
+              <h2 class="block-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Skills & Reflexes You'll Acquire
+              </h2>
+              <div class="skills-grid">
+                <div class="skill-item">
+                  <svg class="skill-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Construct Few-Shot & Chain-of-Thought LLM Prompts</span>
+                </div>
+                <div class="skill-item">
+                  <svg class="skill-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Architect Retrieval-Augmented Generation (RAG) Pipelines</span>
+                </div>
+                <div class="skill-item">
+                  <svg class="skill-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Apply LoRA and PEFT Parameter Efficient Fine-Tuning</span>
+                </div>
+                <div class="skill-item">
+                  <svg class="skill-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Secure AI Endpoints Against Prompt Injection Attacks</span>
+                </div>
+                <div class="skill-item">
+                  <svg class="skill-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Deploy Autonomous Multi-Agent Tool-Calling Loops</span>
+                </div>
+                <div class="skill-item">
+                  <svg class="skill-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Evaluate Token Cost Economics & Latency Bottlenecks</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: CURRICULUM ACCORDION & EXPORT TOOLBAR -->
+            <div class="content-block">
+              <!-- Syllabus Export & Download Toolbar -->
+              <div class="syllabus-export-toolbar" id="syllabus-export-bar">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span style="font-size: 0.95rem; font-weight: 700; color: #FFF;">Course Syllabus & Study Notes</span>
+                  </div>
+                  <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.2rem 0 0 0;">Export the accredited curriculum or download study notes for offline reference.</p>
+                </div>
+                <div class="export-actions-group">
+                  <button class="export-btn-pill primary" id="btn-export-pdf" title="Generate printable syllabus PDF">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PDF</span>
+                  </button>
+                  <button class="export-btn-pill" id="btn-export-md" title="Download Markdown notes file">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    <span>Notes (.md)</span>
+                  </button>
+                  <button class="export-btn-pill" id="btn-copy-syllabus" title="Copy syllabus summary to clipboard">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Text</span>
+                  </button>
+                  <button class="export-btn-pill" id="btn-preview-sample-lesson" style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.4); color: var(--secondary-light);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Sample Lesson</span>
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 class="block-title" style="margin-bottom: 0;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  Curriculum Breakdown
+                </h2>
+                <button id="toggle-all-accordion" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">Expand All</button>
+              </div>
+
+              <div id="curriculum-accordion-list">
+                <!-- Dynamically populated from course.modules by js/course-details.js -->
+              </div>
+            </div>
+
+            <!-- SECTION 4: REQUIREMENTS -->
+            <div class="content-block">
+              <h2 class="block-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Prerequisites & Requirements
+              </h2>
+              <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); margin-bottom: 0.85rem; font-size: 0.95rem;">
+                  <span style="color: var(--secondary-color); font-weight: 700;">•</span>
+                  Basic familiarity with JavaScript or Python programming fundamentals.
+                </li>
+                <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); margin-bottom: 0.85rem; font-size: 0.95rem;">
+                  <span style="color: var(--secondary-color); font-weight: 700;">•</span>
+                  Understanding of REST APIs and HTTP requests.
+                </li>
+                <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); margin-bottom: 0.85rem; font-size: 0.95rem;">
+                  <span style="color: var(--secondary-color); font-weight: 700;">•</span>
+                  A modern web browser (Chrome, Edge, or Firefox) to access cloud terminal sandboxes.
+                </li>
+              </ul>
+            </div>
+
+            <!-- SECTION 5: INSTRUCTOR BIO -->
+            <div class="content-block">
+              <h2 class="block-title">Meet Your Lead Instructor</h2>
+              <div class="instructor-card">
+                <img id="instructor-bio-img" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop" alt="Dr. Evelyn Thorne" class="instructor-avatar-lg" />
+                <div>
+                  <h3 style="font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; color: #FFF; margin-bottom: 0.25rem;" id="instructor-bio-name">Dr. Evelyn Thorne</h3>
+                  <p style="color: var(--secondary-light); font-size: 0.9rem; margin-bottom: 1rem;" id="instructor-bio-title">Senior AI Research Scientist & Neural Network Architect</p>
+                  <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Dr. Thorne has directed research labs focusing on transformer optimization, parameter-efficient fine-tuning, and alignment guardrails. She has authored over 18 peer-reviewed publications and mentored over 45,000 engineers globally.
+                  </p>
+                  <div style="display: flex; gap: 2rem; font-size: 0.85rem; color: var(--text-secondary);">
+                    <div><strong style="color: #FFF; font-size: 1.1rem; display: block;">4.95 ★</strong> Instructor Rating</div>
+                    <div><strong style="color: #FFF; font-size: 1.1rem; display: block;">45.2k+</strong> Students</div>
+                    <div><strong style="color: #FFF; font-size: 1.1rem; display: block;">8</strong> Courses</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 6: REVIEWS -->
+            <div class="content-block">
+              <h2 class="block-title">Scholar Feedback & Testimonials</h2>
+              
+              <div class="rating-breakdown-box">
+                <div style="text-align: center;">
+                  <div class="rating-num-lg">4.9</div>
+                  <div style="color: #F59E0B; margin: 0.5rem 0;">★ ★ ★ ★ ★</div>
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);">Course Score</span>
+                </div>
+                <div>
+                  <div class="bar-row">
+                    <span>5 Stars</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 88%;"></div></div>
+                    <span>88%</span>
+                  </div>
+                  <div class="bar-row">
+                    <span>4 Stars</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 9%;"></div></div>
+                    <span>9%</span>
+                  </div>
+                  <div class="bar-row">
+                    <span>3 Stars</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 2%;"></div></div>
+                    <span>2%</span>
+                  </div>
+                  <div class="bar-row">
+                    <span>2 Stars</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 1%;"></div></div>
+                    <span>1%</span>
+                  </div>
+                  <div class="bar-row">
+                    <span>1 Star</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <span>0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reviews List -->
+              <div class="review-card">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 700;">MK</div>
+                    <div>
+                      <span style="font-weight: 700; color: #FFF; display: block; font-size: 0.95rem;">Michael K.</span>
+                      <span style="font-size: 0.75rem; color: var(--secondary-light);">Verified Scholar • 2 weeks ago</span>
+                    </div>
+                  </div>
+                  <div style="color: #F59E0B;">★ ★ ★ ★ ★</div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                  "The terminal sandboxes made all the difference. I was able to fine-tune a LoRA model directly in the browser and inspect context window tokens in real time!"
+                </p>
+              </div>
+
+              <div class="review-card">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--secondary-color); color: var(--bg-color); display: flex; align-items: center; justify-content: center; font-weight: 700;">SL</div>
+                    <div>
+                      <span style="font-weight: 700; color: #FFF; display: block; font-size: 0.95rem;">Sarah Lin</span>
+                      <span style="font-size: 0.75rem; color: var(--secondary-light);">Verified Scholar • 1 month ago</span>
+                    </div>
+                  </div>
+                  <div style="color: #F59E0B;">★ ★ ★ ★ ★</div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                  "Dr. Thorne explains complex attention matrices with crystal clarity. The RAG module alone was worth 10x the price of the course."
+                </p>
+              </div>
+            </div>
+
+            <!-- SECTION 7: FAQ -->
+            <div class="content-block">
+              <h2 class="block-title">Frequently Asked Questions</h2>
+              <div id="faq-accordion-list">
+                <div class="accordion-item">
+                  <button class="accordion-header">
+                    <span>Do I get permanent lifetime access to the curriculum?</span>
+                    <svg class="accordion-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="accordion-content">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                      Yes! Once enrolled, you enjoy full lifetime access to all recorded lectures, terminal sandbox environments, and future curriculum updates.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">
+                    <span>Will I receive a cryptographic certificate upon completion?</span>
+                    <svg class="accordion-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="accordion-content">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                      Absolutely. Upon passing all module quizzes and terminal sandbox challenges, a SHA-256 verified digital credential will be deposited into your Scholar Space Vault.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">
+                    <span>What if the program does not meet my expectations?</span>
+                    <svg class="accordion-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="accordion-content">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                      We offer a 100% risk-free 30-day money-back guarantee. If you are unsatisfied for any reason, request a full refund with one click.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 8: RELATED COURSES -->
+            <div class="content-block">
+              <h2 class="block-title">Related Recommended Syllabi</h2>
+              <div class="course-grid" id="related-courses-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.25rem;">
+                <!-- Dynamically populated by js/course-details.js -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT COLUMN: STICKY ENROLL CARD -->
+          <div class="sticky-sidebar">
+            <div class="enroll-card">
+              <div class="video-preview-wrapper" style="aspect-ratio: 16/10; margin-bottom: 1.25rem;">
+                <img id="sticky-course-img" src="https://images.unsplash.com/photo-1677442136019-21780efad99a?q=80&w=600&auto=format&fit=crop" alt="Course" class="video-preview-img" />
+                <button class="video-overlay-btn" style="width: 54px; height: 54px;" id="sticky-play-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+              </div>
+
+              <div class="enroll-price-box">
+                <span class="price-main" id="sticky-price-main">$89.00</span>
+                <span class="price-old" id="sticky-price-old">$249.00</span>
+                <span class="price-discount-badge">64% OFF</span>
+              </div>
+
+              <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: var(--radius-sm); padding: 0.6rem 0.85rem; font-size: 0.8rem; color: #F59E0B; margin-bottom: 1.25rem; text-align: center;">
+                ⚡ Special Scholar Discount ends in <strong>14h 22m</strong>
+              </div>
+
+              <button class="btn btn-primary" id="main-enroll-now-btn" style="width: 100%; margin-bottom: 1rem; justify-content: center; padding: 0.9rem;">
+                <span>Enroll In Track Now</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+
+              <button class="btn btn-secondary" id="add-wishlist-btn" style="width: 100%; margin-bottom: 0.75rem; justify-content: center; padding: 0.75rem; font-size: 0.85rem;">
+                <span>Bookmark to Wishlist</span>
+              </button>
+
+              <button class="export-btn-pill" id="sticky-download-syllabus-btn" style="width: 100%; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem; font-size: 0.85rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Download Syllabus (PDF)</span>
+              </button>
+
+              <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; margin-top: 1rem;">
+                <h4 style="font-size: 0.9rem; font-weight: 700; color: #FFF; margin-bottom: 1rem;">This Track Includes:</h4>
+                <div class="feature-list-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span id="sticky-hours-feature">18.5 Hours on-demand video</span>
+                </div>
+                <div class="feature-list-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                  <span>Interactive Terminal Sandbox Access</span>
+                </div>
+                <div class="feature-list-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>14 Downloadable Lab Guides & Code Repos</span>
+                </div>
+                <div class="feature-list-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span>Verified Cryptographic Certificate</span>
+                </div>
+                <div class="feature-list-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  <span>Full Lifetime Access (Desktop & Mobile)</span>
+                </div>
+              </div>
+
+              <div style="text-align: center; margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+                🛡️ 30-Day Money-Back Guarantee
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Modal -->
+    <div class="modal" id="preview-video-modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+          <h3 style="font-family: var(--font-display); font-weight: 700;">Course Video Preview</h3>
+          <button class="modal-close" id="preview-modal-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="modal-body" style="padding: 0;">
+          <video id="modal-video-element" controls style="width: 100%; display: block; background: #000;">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <!-- Premium Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+          <p class="footer-copyright">© 2026 LearnSphere Global Inc. All rights reserved.</p>
+          <div class="system-status">
+            <span class="status-dot"></span>
+            <span>All Sandbox Nodes Operational (Uptime 99.98%)</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/course-details.js"></script>
+  </body>
+</html>

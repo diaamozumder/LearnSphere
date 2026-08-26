@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Syllabus Catalog • LearnSphere</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      /* Page specific layout */
+      .catalog-section {
+        padding-top: 8rem;
+        padding-bottom: 6rem;
+        position: relative;
+        z-index: 2;
+      }
+      .catalog-grid-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 3rem;
+        margin-top: 3rem;
+      }
+      .filter-sidebar {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 6rem;
+      }
+      .filter-group {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+      }
+      .filter-group:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+      .filter-title {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        color: #FFF;
+      }
+      .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.85rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition-fast);
+      }
+      .filter-option:hover {
+        color: #FFF;
+      }
+      .filter-checkbox {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.02);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+      }
+      .filter-checkbox:checked {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+      }
+      .filter-checkbox:checked::after {
+        content: '✓';
+        font-size: 0.7rem;
+        color: var(--bg-color);
+        font-weight: 900;
+      }
+      .search-bar-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .search-input-wrapper {
+        position: relative;
+        flex-grow: 1;
+      }
+      .search-input {
+        width: 100%;
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.5rem 1rem 3rem;
+        color: #FFF;
+        font-family: var(--font-main);
+        outline: none;
+        transition: var(--transition-fast);
+      }
+      .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
+      }
+      .search-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+      }
+      .catalog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      .catalog-count {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+      }
+      .catalog-count strong {
+        color: #FFF;
+      }
+      .sort-select {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 0.5rem 1rem;
+        color: #FFF;
+        font-family: var(--font-main);
+        font-size: 0.85rem;
+        outline: none;
+        cursor: pointer;
+      }
+      @media (max-width: 992px) {
+        .catalog-grid-layout {
+          grid-template-columns: 1fr;
+        }
+        .filter-sidebar {
+          position: relative;
+          top: 0;
+          margin-bottom: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loader-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+        </svg>
+        <span>LearnSphere</span>
+      </div>
+      <div class="loader-bar-container">
+        <div class="loader-bar"></div>
+      </div>
+    </div>
+
+    <!-- Background meshes -->
+    <div class="bg-mesh-glow">
+      <div class="mesh-circle-1"></div>
+      <div class="mesh-circle-2"></div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav id="navbar" class="navbar">
+      <div class="container nav-container">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+            </svg>
+          </div>
+          <span class="logo-text">Learn<span>Sphere</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/pages/courses.html" class="nav-link active">Courses</a></li>
+          <li><a href="/pages/dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="/#why-us" class="nav-link">Why LearnSphere</a></li>
+          <li><a href="/#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a href="/pages/login.html" class="nav-link" style="padding: 0; font-weight: 600;">Log In</a>
+          <a href="/pages/register.html" class="btn btn-primary"><span>Get Started</span></a>
+        </div>
+
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+      <ul class="mobile-nav-links">
+        <li><a href="/" class="mobile-nav-link">Home</a></li>
+        <li><a href="/pages/courses.html" class="mobile-nav-link active">Courses</a></li>
+        <li><a href="/pages/dashboard.html" class="mobile-nav-link">Dashboard</a></li>
+        <li><a href="/#why-us" class="mobile-nav-link">Why LearnSphere</a></li>
+        <li><a href="/#pricing" class="mobile-nav-link">Pricing</a></li>
+      </ul>
+      <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+        <a href="/pages/login.html" class="btn btn-secondary" style="width: 100%;">Log In</a>
+        <a href="/pages/register.html" class="btn btn-primary" style="width: 100%;">Get Started</a>
+      </div>
+    </div>
+
+    <!-- Main Catalog Section -->
+    <main class="catalog-section">
+      <div class="container">
+        <div class="section-header reveal" data-delay="100" style="margin-bottom: 2rem; text-align: left; max-width: 100%;">
+          <div class="badge">CURRICULUM ARCHIVES</div>
+          <h2>Our Active Syllabus Track</h2>
+          <p>Acquire on-demand engineering reflexes using isolated sandboxes, peer mentorship vaults, and credential assessments.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar-container reveal" data-delay="150">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="catalog-search" class="search-input" placeholder="Search specialized tracks, instructors, topics..." />
+          </div>
+        </div>
+
+        <div class="catalog-grid-layout">
+          <!-- Sidebar Filters -->
+          <aside class="filter-sidebar reveal" data-delay="200">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+              <span style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: #FFF;">Filters</span>
+              <button id="sidebar-reset-filters" style="background: none; border: none; color: var(--secondary-color); font-size: 0.825rem; font-weight: 600; cursor: pointer; padding: 0;">Clear All</button>
+            </div>
+            <!-- Filter Group 1 -->
+            <div class="filter-group">
+              <h3 class="filter-title">Topic Dimensions</h3>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox category-filter" value="Artificial Intelligence" />
+                Artificial Intelligence
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox category-filter" value="Cloud Engineering" />
+                Cloud Engineering
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox category-filter" value="Interface Design" />
+                Interface Design
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox category-filter" value="Cyber Security" />
+                Cyber Security
+              </label>
+            </div>
+
+            <!-- Filter Group 2 -->
+            <div class="filter-group">
+              <h3 class="filter-title">Difficulty Level</h3>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox level-filter" value="beginner" />
+                Beginner Track
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox level-filter" value="intermediate" />
+                Intermediate Track
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox level-filter" value="advanced" />
+                Advanced Track
+              </label>
+            </div>
+
+            <!-- Filter Group 3: Duration Filter -->
+            <div class="filter-group">
+              <h3 class="filter-title">Program Duration</h3>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox duration-filter" value="short" />
+                Short (&lt; 5 hours)
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox duration-filter" value="medium" />
+                Medium (5 - 15 hours)
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" class="filter-checkbox duration-filter" value="long" />
+                Long (&gt; 15 hours)
+              </label>
+            </div>
+          </aside>
+
+          <!-- Core Catalog List -->
+          <div class="catalog-main reveal" data-delay="250">
+            <div class="catalog-header">
+              <div class="catalog-count">Showing <span id="displayed-count">8</span> of <span id="total-count">8</span> programs</div>
+              <select id="catalog-sort" class="sort-select">
+                <option value="popular">Most Popular</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+              </select>
+            </div>
+
+            <!-- Dynamically Rendered course list grid -->
+            <div class="course-grid" id="catalog-course-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+              <!-- Handled dynamically by js/courses.js -->
+            </div>
+
+            <!-- Pagination Container -->
+            <div id="catalog-pagination" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 3rem;">
+              <!-- Pagination controls injected by js/courses.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Premium Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+          <p class="footer-copyright">© 2026 LearnSphere Global Inc. All rights reserved.</p>
+          <div class="system-status">
+            <span class="status-dot"></span>
+            <span>All Sandbox Nodes Operational (Uptime 99.98%)</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/courses.js"></script>
+  </body>
+</html>

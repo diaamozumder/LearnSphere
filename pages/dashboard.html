@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard • LearnSphere</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      /* Student Dashboard Custom Layout */
+      .dashboard-section {
+        padding-top: 6.5rem;
+        padding-bottom: 5rem;
+        position: relative;
+        z-index: 2;
+      }
+      .dashboard-layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        margin-top: 1.5rem;
+      }
+      .dash-sidebar {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        height: fit-content;
+        position: sticky;
+        top: 5.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        backdrop-filter: blur(16px);
+      }
+      .dash-nav-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.8rem 1.1rem;
+        border-radius: var(--radius-md);
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-secondary);
+        font-family: var(--font-main);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: var(--transition-fast);
+      }
+      .dash-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: #FFF;
+      }
+      .dash-nav-btn.active {
+        background: rgba(79, 70, 229, 0.12);
+        border-color: rgba(79, 70, 229, 0.3);
+        color: var(--primary-light);
+        font-weight: 600;
+      }
+      .dash-nav-btn.logout-btn {
+        color: #F87171;
+        margin-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        padding-top: 1rem;
+      }
+      .dash-nav-btn.logout-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.2);
+        color: #EF4444;
+      }
+      .dash-main-content {
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        min-height: 700px;
+        position: relative;
+        backdrop-filter: blur(16px);
+      }
+      .dash-pane {
+        display: none;
+      }
+      .dash-pane.active {
+        display: block;
+        animation: paneFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes paneFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Top Header Bar inside Main */
+      .dash-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .notification-bell-btn {
+        position: relative;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFF;
+        cursor: pointer;
+        transition: var(--transition-fast);
+      }
+      .notification-bell-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--secondary-color);
+      }
+      .notif-badge-count {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        background: #EF4444;
+        color: #FFF;
+        font-size: 0.65rem;
+        font-weight: 700;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--bg-color);
+      }
+
+      /* Welcome Banner */
+      .welcome-banner {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(6, 182, 212, 0.15) 100%);
+        border: 1px solid rgba(79, 70, 229, 0.3);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .welcome-banner::after {
+        content: '';
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      /* Section Grid Layouts */
+      .dash-grid-2 {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 1.75rem;
+        margin-bottom: 2rem;
+      }
+      .dash-grid-full {
+        margin-bottom: 2rem;
+      }
+      .dash-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        position: relative;
+      }
+      .dash-card-title {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #FFF;
+        margin-bottom: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Continue Learning Card */
+      .continue-learning-box {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 1.5rem;
+        align-items: center;
+        background: rgba(11, 17, 32, 0.8);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.25rem;
+      }
+      .continue-img-wrap {
+        position: relative;
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        aspect-ratio: 16/10;
+      }
+      .continue-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .continue-play-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFF;
+        cursor: pointer;
+        transition: var(--transition-fast);
+      }
+      .continue-img-wrap:hover .continue-play-overlay {
+        background: rgba(6, 182, 212, 0.7);
+      }
+
+      /* Course Progress Cards */
+      .progress-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+      }
+      .progress-card-item {
+        background: rgba(255, 255, 255, 0.015);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.25rem;
+        transition: var(--transition-smooth);
+      }
+      .progress-card-item:hover {
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+      }
+
+      /* Weekly Chart */
+      .chart-bars-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        height: 160px;
+        padding-top: 1.5rem;
+        padding-bottom: 0.5rem;
+      }
+      .chart-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 11%;
+        gap: 0.5rem;
+      }
+      .chart-bar-fill-wrap {
+        width: 22px;
+        height: 110px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 4px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+        position: relative;
+      }
+      .chart-bar-fill {
+        width: 100%;
+        background: linear-gradient(0deg, var(--primary-color), var(--secondary-color));
+        border-radius: 4px;
+        transition: height 1s ease;
+      }
+      .chart-bar-fill-wrap:hover::after {
+        content: attr(data-hours);
+        position: absolute;
+        top: -24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface-color);
+        color: var(--secondary-light);
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        white-space: nowrap;
+      }
+
+      /* Upcoming Deadlines */
+      .deadline-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.88rem;
+      }
+      .deadline-item:last-child {
+        border-bottom: none;
+      }
+
+      /* Recent Certificates */
+      .cert-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+      }
+      .cert-mini-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      /* Achievement Badges */
+      .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+      }
+      .badge-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem 0.5rem;
+        text-align: center;
+        transition: var(--transition-fast);
+        cursor: pointer;
+      }
+      .badge-item:hover {
+        border-color: var(--secondary-color);
+        background: rgba(6, 182, 212, 0.05);
+        transform: translateY(-3px);
+      }
+      .badge-item.unlocked .badge-icon {
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        border-color: var(--secondary-color);
+      }
+      .badge-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin: 0 auto 0.75rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+      }
+
+      /* Notifications Drawer / Panel */
+      .notif-popover {
+        position: absolute;
+        top: 4.5rem;
+        right: 2.5rem;
+        width: 360px;
+        background: #0E1527;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        z-index: 100;
+        display: none;
+      }
+      .notif-popover.active {
+        display: block;
+        animation: paneFadeIn 0.25s ease forwards;
+      }
+      .notif-item {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+      .notif-item.unread {
+        background: rgba(79, 70, 229, 0.08);
+      }
+      .notif-item:last-child {
+        border-bottom: none;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 992px) {
+        .dashboard-layout { grid-template-columns: 1fr; }
+        .dash-grid-2 { grid-template-columns: 1fr; }
+        .progress-cards-grid { grid-template-columns: 1fr; }
+        .badges-grid { grid-template-columns: repeat(3, 1fr); }
+        .continue-learning-box { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 576px) {
+        .badges-grid { grid-template-columns: repeat(2, 1fr); }
+        .cert-mini-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loader-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+        </svg>
+        <span>LearnSphere</span>
+      </div>
+      <div class="loader-bar-container">
+        <div class="loader-bar"></div>
+      </div>
+    </div>
+
+    <!-- Background meshes -->
+    <div class="bg-mesh-glow">
+      <div class="mesh-circle-1"></div>
+      <div class="mesh-circle-2"></div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav id="navbar" class="navbar">
+      <div class="container nav-container">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+            </svg>
+          </div>
+          <span class="logo-text">Learn<span>Sphere</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/pages/courses.html" class="nav-link">Courses</a></li>
+          <li><a href="/pages/dashboard.html" class="nav-link active">Dashboard</a></li>
+          <li><a href="/#why-us" class="nav-link">Why LearnSphere</a></li>
+          <li><a href="/#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a href="/pages/dashboard.html" class="nav-link" id="user-profile-btn" style="padding: 0; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--secondary-color); color: var(--bg-color); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">JD</div>
+            <span>Jane Doe</span>
+          </a>
+          <a href="/pages/login.html" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;">Sign Out</a>
+        </div>
+
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+      <ul class="mobile-nav-links">
+        <li><a href="/" class="mobile-nav-link">Home</a></li>
+        <li><a href="/pages/courses.html" class="mobile-nav-link">Courses</a></li>
+        <li><a href="/pages/dashboard.html" class="mobile-nav-link active">Dashboard</a></li>
+        <li><a href="/#why-us" class="mobile-nav-link">Why LearnSphere</a></li>
+        <li><a href="/#pricing" class="mobile-nav-link">Pricing</a></li>
+      </ul>
+      <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+        <a href="/pages/login.html" class="btn btn-secondary" style="width: 100%;">Sign Out</a>
+      </div>
+    </div>
+
+    <!-- Main Student Dashboard Container -->
+    <section class="dashboard-section">
+      <div class="container dashboard-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="dash-sidebar reveal" data-delay="100">
+          <button class="dash-nav-btn active" data-target="pane-dashboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+            <span>Dashboard</span>
+          </button>
+
+          <button class="dash-nav-btn" data-target="pane-my-courses">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>My Courses</span>
+          </button>
+
+          <button class="dash-nav-btn" data-target="pane-certificates">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Certificates</span>
+          </button>
+
+          <button class="dash-nav-btn" data-target="pane-calendar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Calendar</span>
+          </button>
+
+          <button class="dash-nav-btn" data-target="pane-messages">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Messages</span>
+          </button>
+
+          <button class="dash-nav-btn" data-target="pane-settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Settings</span>
+          </button>
+
+          <a href="/pages/login.html" class="dash-nav-btn logout-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Logout</span>
+          </a>
+        </aside>
+
+        <!-- MAIN AREA WORKSPACE -->
+        <main class="dash-main-content reveal" data-delay="200">
+          
+          <!-- TOP BAR HEADER -->
+          <div class="dash-topbar">
+            <div>
+              <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--secondary-light); font-weight: 700;">Scholar Central</span>
+              <h1 style="font-family: var(--font-display); font-size: 1.75rem; font-weight: 800; color: #FFF; margin-top: 0.2rem;" id="pane-header-title">Student Dashboard</h1>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+              <!-- Notification Bell Button -->
+              <button class="notification-bell-btn" id="notif-toggle-btn" aria-label="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notif-badge-count">3</span>
+              </button>
+
+              <!-- Notifications Popover Card -->
+              <div class="notif-popover" id="notif-popover">
+                <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #FFF; font-size: 0.95rem;">Notifications</strong>
+                  <button id="clear-notifs-btn" style="background: none; border: none; color: var(--secondary-light); font-size: 0.75rem; cursor: pointer;">Mark all read</button>
+                </div>
+                <div>
+                  <div class="notif-item unread">
+                    <span style="color: var(--secondary-color);">●</span>
+                    <div>
+                      <strong style="color: #FFF; display: block;">LoRA Fine-Tuning Lab Passed!</strong>
+                      <span>You scored 100% on terminal sandbox exercise #4. (+200 XP)</span>
+                    </div>
+                  </div>
+                  <div class="notif-item unread">
+                    <span style="color: var(--secondary-color);">●</span>
+                    <div>
+                      <strong style="color: #FFF; display: block;">Dr. Evelyn Thorne replied</strong>
+                      <span>"Great question about attention context matrices..."</span>
+                    </div>
+                  </div>
+                  <div class="notif-item">
+                    <span style="color: var(--text-secondary);">○</span>
+                    <div>
+                      <strong style="color: #FFF; display: block;">New Certificate Issued</strong>
+                      <span>Credential of LLM Prompt Architectures deposited into vault.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== 1. MAIN DASHBOARD PANE ==================== -->
+          <div class="dash-pane active" id="pane-dashboard">
+            
+            <!-- SECTION 1: WELCOME BANNER -->
+            <div class="welcome-banner">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                  <span style="font-size: 1.5rem;">👋</span>
+                  <h2 style="font-family: var(--font-display); font-size: 1.85rem; font-weight: 800; color: #FFF;">Welcome back, <span id="dash-welcome-name">Jane</span>!</h2>
+                </div>
+                <p style="color: var(--text-secondary); max-width: 520px; font-size: 0.95rem; line-height: 1.5;">
+                  You've maintained a <strong>14-Day Study Streak</strong>! Keep up the momentum to earn your next badge in Cloud Security.
+                </p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.25rem;">
+                  <button class="btn btn-primary switch-pane-trigger" data-target-pane="pane-my-courses" style="padding: 0.5rem 1.1rem; font-size: 0.85rem;">
+                    <span>Resume Course</span>
+                  </button>
+                  <button class="btn btn-secondary switch-pane-trigger" data-target-pane="pane-calendar" style="padding: 0.5rem 1.1rem; font-size: 0.85rem;">
+                    <span>View Deadlines</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Streak Stat Badge -->
+              <div style="text-align: center; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem 1.5rem;">
+                <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-color); font-family: var(--font-display); line-height: 1;">🔥 14</div>
+                <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; display: block; margin-top: 0.35rem;">Daily Streak</span>
+              </div>
+            </div>
+
+            <!-- SECTION 2 & 3: CONTINUE LEARNING & COURSE PROGRESS CARDS -->
+            <div class="dash-grid-2">
+              
+              <!-- SECTION 2: CONTINUE LEARNING -->
+              <div class="dash-card">
+                <div class="dash-card-title">
+                  <span>Continue Learning</span>
+                  <span style="font-size: 0.75rem; color: var(--secondary-light); font-weight: 600;">Active Track</span>
+                </div>
+
+                <div class="continue-learning-box">
+                  <div class="continue-img-wrap" id="continue-video-btn" style="cursor: pointer;">
+                    <img src="https://images.unsplash.com/photo-1677442136019-21780efad99a?q=80&w=400&auto=format&fit=crop" alt="Active Course" />
+                    <div class="continue-play-overlay">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="badge" style="font-size: 0.65rem; padding: 0.15rem 0.4rem; margin-bottom: 0.35rem;">Unit 2 • Lesson 4</span>
+                    <h3 style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFF; margin-bottom: 0.35rem;">
+                      LoRA & PEFT Parameter Efficient Tuning
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Course: Advanced Generative AI & Prompt Architectures</p>
+                    
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                      <span style="color: var(--text-secondary);">Module Completion</span>
+                      <strong style="color: var(--secondary-light);">75%</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); height: 5px; border-radius: 99px; overflow: hidden;">
+                      <div style="width: 75%; height: 100%; background: var(--secondary-color);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: WEEKLY LEARNING CHART -->
+              <div class="dash-card">
+                <div class="dash-card-title">
+                  <span>Weekly Learning Clock</span>
+                  <strong style="font-size: 0.85rem; color: var(--secondary-light);">18.5 hrs total</strong>
+                </div>
+
+                <div class="chart-bars-container">
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="2.1 hrs"><div class="chart-bar-fill" style="height: 55%;"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Mon</span>
+                  </div>
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="3.4 hrs"><div class="chart-bar-fill" style="height: 85%;"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Tue</span>
+                  </div>
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="1.8 hrs"><div class="chart-bar-fill" style="height: 45%;"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Wed</span>
+                  </div>
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="4.0 hrs"><div class="chart-bar-fill" style="height: 100%;"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Thu</span>
+                  </div>
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="2.5 hrs"><div class="chart-bar-fill" style="height: 65%;"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Fri</span>
+                  </div>
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="3.0 hrs"><div class="chart-bar-fill" style="height: 75%; background: linear-gradient(0deg, var(--secondary-color), var(--secondary-light));"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Sat</span>
+                  </div>
+                  <div class="chart-col">
+                    <div class="chart-bar-fill-wrap" data-hours="1.7 hrs"><div class="chart-bar-fill" style="height: 40%; background: linear-gradient(0deg, var(--secondary-color), var(--secondary-light));"></div></div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Sun</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- SECTION 3: COURSE PROGRESS CARDS (Detailed List) -->
+            <div class="dash-card dash-grid-full">
+              <div class="dash-card-title">
+                <span>Enrolled Syllabus Track Progress</span>
+                <button class="switch-pane-trigger" data-target-pane="pane-my-courses" style="background: none; border: none; color: var(--secondary-light); font-size: 0.85rem; cursor: pointer;">View All (3)</button>
+              </div>
+
+              <div class="progress-cards-grid">
+                <!-- Course 1 -->
+                <div class="progress-card-item">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                    <div>
+                      <span class="badge" style="font-size: 0.65rem;">Artificial Intelligence</span>
+                      <h4 style="font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #FFF; margin-top: 0.35rem;">Advanced Generative AI</h4>
+                    </div>
+                    <strong style="color: var(--secondary-light); font-size: 0.9rem;">75%</strong>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.05); height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 0.75rem;">
+                    <div style="width: 75%; height: 100%; background: var(--secondary-color);"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary);">
+                    <span>32/42 Lessons Done</span>
+                    <a href="/pages/course-details.html?id=1" style="color: var(--secondary-light);">Resume &rarr;</a>
+                  </div>
+                </div>
+
+                <!-- Course 2 -->
+                <div class="progress-card-item">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                    <div>
+                      <span class="badge" style="font-size: 0.65rem; background: rgba(79, 70, 229, 0.15); border-color: rgba(79, 70, 229, 0.3); color: var(--primary-light);">Cloud Architecture</span>
+                      <h4 style="font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #FFF; margin-top: 0.35rem;">Full-Stack Cloud Architectures</h4>
+                    </div>
+                    <strong style="color: var(--primary-light); font-size: 0.9rem;">40%</strong>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.05); height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 0.75rem;">
+                    <div style="width: 40%; height: 100%; background: var(--primary-color);"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary);">
+                    <span>22/56 Lessons Done</span>
+                    <a href="/pages/course-details.html?id=2" style="color: var(--primary-light);">Resume &rarr;</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 5 & 6: UPCOMING DEADLINES & RECENT CERTIFICATES -->
+            <div class="dash-grid-2">
+              
+              <!-- SECTION 5: UPCOMING DEADLINES -->
+              <div class="dash-card">
+                <div class="dash-card-title">
+                  <span>Upcoming Deadlines & Submissions</span>
+                  <span style="font-size: 0.75rem; color: #F87171; font-weight: 600;">2 Urgent</span>
+                </div>
+
+                <div>
+                  <div class="deadline-item">
+                    <div>
+                      <strong style="color: #FFF; display: block;">LoRA Weight Sandbox Assessment</strong>
+                      <span style="font-size: 0.75rem; color: var(--text-secondary);">GenAI Track • Lab Assignment</span>
+                    </div>
+                    <div style="text-align: right;">
+                      <span style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #F87171; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block;">Due Today, 11:59 PM</span>
+                    </div>
+                  </div>
+
+                  <div class="deadline-item">
+                    <div>
+                      <strong style="color: #FFF; display: block;">Kubernetes Cluster Config Audit</strong>
+                      <span style="font-size: 0.75rem; color: var(--text-secondary);">Cloud Track masterclass</span>
+                    </div>
+                    <div style="text-align: right;">
+                      <span style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #F59E0B; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block;">Due in 2 Days</span>
+                    </div>
+                  </div>
+
+                  <div class="deadline-item">
+                    <div>
+                      <strong style="color: #FFF; display: block;">UI Tokens Micro-Animations Challenge</strong>
+                      <span style="font-size: 0.75rem; color: var(--text-secondary);">Interface Design Track</span>
+                    </div>
+                    <div style="text-align: right;">
+                      <span style="background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); color: #34D399; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block;">Submitted ✓</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 6: RECENT CERTIFICATES -->
+              <div class="dash-card">
+                <div class="dash-card-title">
+                  <span>Recent Certificates</span>
+                  <button class="switch-pane-trigger" data-target-pane="pane-certificates" style="background: none; border: none; color: var(--secondary-light); font-size: 0.85rem; cursor: pointer;">Vault (1)</button>
+                </div>
+
+                <div class="cert-mini-card">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: #FFF; flex-shrink: 0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
+                  <div>
+                    <h4 style="font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: #FFF; margin-bottom: 0.2rem;">LLM Prompt Architectures</h4>
+                    <span style="font-size: 0.75rem; color: var(--secondary-light); display: block;">Issued July 2026</span>
+                    <button class="switch-pane-trigger" data-target-pane="pane-certificates" style="background: none; border: none; color: #FFF; font-size: 0.75rem; font-weight: 600; padding: 0; margin-top: 0.25rem; text-decoration: underline; cursor: pointer;">View Verification</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- SECTION 8: ACHIEVEMENT BADGES -->
+            <div class="dash-card dash-grid-full">
+              <div class="dash-card-title">
+                <span>Achievement Badges & Milestones</span>
+                <span style="font-size: 0.8rem; color: var(--secondary-light); font-weight: 600;">4 / 8 Unlocked</span>
+              </div>
+
+              <div class="badges-grid">
+                <div class="badge-item unlocked">
+                  <div class="badge-icon">🔥</div>
+                  <strong style="font-size: 0.82rem; color: #FFF; display: block;">14-Day Streak</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">Consecutive Login</span>
+                </div>
+
+                <div class="badge-item unlocked">
+                  <div class="badge-icon">🧠</div>
+                  <strong style="font-size: 0.82rem; color: #FFF; display: block;">Prompt Master</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">GenAI Unit Passed</span>
+                </div>
+
+                <div class="badge-item unlocked">
+                  <div class="badge-icon">⚡</div>
+                  <strong style="font-size: 0.82rem; color: #FFF; display: block;">Code Ninja</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">10 Labs Compiled</span>
+                </div>
+
+                <div class="badge-item unlocked">
+                  <div class="badge-icon">🛡️</div>
+                  <strong style="font-size: 0.82rem; color: #FFF; display: block;">Cloud Pioneer</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">IAM Audit Complete</span>
+                </div>
+
+                <div class="badge-item" style="opacity: 0.4;">
+                  <div class="badge-icon">👑</div>
+                  <strong style="font-size: 0.82rem; color: #FFF; display: block;">Legendary Scholar</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">Locked</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 7: RECOMMENDED COURSES -->
+            <div class="dash-card dash-grid-full">
+              <div class="dash-card-title">
+                <span>Tailored Syllabus Recommendations</span>
+                <a href="/pages/courses.html" style="color: var(--secondary-light); font-size: 0.85rem;">Browse Full Catalog &rarr;</a>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;">
+                <!-- Rec 1 -->
+                <div style="background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; display: flex; gap: 1rem; align-items: center;">
+                  <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=200&auto=format&fit=crop" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;" alt="Cyber Security" />
+                  <div>
+                    <span class="badge" style="font-size: 0.65rem; padding: 0.15rem 0.35rem;">Cyber Security</span>
+                    <h4 style="font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: #FFF; margin-top: 0.2rem;">Cyber Security & Cloud Vulnerability</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">16 Hours • 4.9 ★ (1.1k ratings)</p>
+                    <a href="/pages/course-details.html?id=4" style="font-size: 0.8rem; color: var(--secondary-light); font-weight: 600; display: inline-block; margin-top: 0.4rem;">Inspect Program &rarr;</a>
+                  </div>
+                </div>
+
+                <!-- Rec 2 -->
+                <div style="background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; display: flex; gap: 1rem; align-items: center;">
+                  <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;" alt="Autonomous Agents" />
+                  <div>
+                    <span class="badge" style="font-size: 0.65rem; padding: 0.15rem 0.35rem;">Artificial Intelligence</span>
+                    <h4 style="font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: #FFF; margin-top: 0.2rem;">Autonomous Agents & LangChain</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">14 Hours • 4.9 ★ (760 ratings)</p>
+                    <a href="/pages/course-details.html?id=7" style="font-size: 0.8rem; color: var(--secondary-light); font-weight: 600; display: inline-block; margin-top: 0.4rem;">Inspect Program &rarr;</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ==================== 2. MY COURSES PANE ==================== -->
+          <div class="dash-pane" id="pane-my-courses">
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem;">My Enrolled Courses</h2>
+
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <!-- Enrolled Item 1 -->
+              <div class="dash-card" style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+                <img src="https://images.unsplash.com/photo-1677442136019-21780efad99a?q=80&w=300&auto=format&fit=crop" style="width: 160px; height: 100px; border-radius: var(--radius-sm); object-fit: cover;" alt="Course 1" />
+                <div style="flex-grow: 1;">
+                  <span class="badge" style="font-size: 0.65rem;">Active</span>
+                  <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #FFF; margin-top: 0.25rem;">Advanced Generative AI & Prompt Architectures</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Instructor: Dr. Evelyn Thorne • 32/42 Lessons</p>
+                  
+                  <div style="background: rgba(255,255,255,0.05); height: 6px; border-radius: 99px; overflow: hidden; max-width: 300px;">
+                    <div style="width: 75%; height: 100%; background: var(--secondary-color);"></div>
+                  </div>
+                </div>
+                <a href="/pages/course-details.html?id=1" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.85rem;">Continue Track</a>
+              </div>
+
+              <!-- Enrolled Item 2 -->
+              <div class="dash-card" style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300&auto=format&fit=crop" style="width: 160px; height: 100px; border-radius: var(--radius-sm); object-fit: cover;" alt="Course 2" />
+                <div style="flex-grow: 1;">
+                  <span class="badge" style="font-size: 0.65rem; background: rgba(79, 70, 229, 0.15); border-color: rgba(79, 70, 229, 0.3); color: var(--primary-light);">In Progress</span>
+                  <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #FFF; margin-top: 0.25rem;">Full-Stack Cloud Architecture Masterclass</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Instructor: Liam Sterling • 22/56 Lessons</p>
+                  
+                  <div style="background: rgba(255,255,255,0.05); height: 6px; border-radius: 99px; overflow: hidden; max-width: 300px;">
+                    <div style="width: 40%; height: 100%; background: var(--primary-color);"></div>
+                  </div>
+                </div>
+                <a href="/pages/course-details.html?id=2" class="btn btn-secondary" style="padding: 0.6rem 1.25rem; font-size: 0.85rem;">Continue Track</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== 3. CERTIFICATES PANE ==================== -->
+          <div class="dash-pane" id="pane-certificates">
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem;">Credential & Certificate Vault</h2>
+
+            <div class="dash-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div style="display: flex; gap: 1.25rem; align-items: center;">
+                <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: #FFF;">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div>
+                  <h3 style="font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: #FFF;">Diploma of LLM Prompt Architectures</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary);">Verified Date: July 15, 2026 • Cryptographic Hash: SHA-256: 8a9f23...</p>
+                </div>
+              </div>
+              <button class="btn btn-primary trigger-cert-modal-btn" data-title="Diploma of LLM Prompt Architectures" data-hash="SHA-256: 8a9f23b1cde92a71f021e78">
+                <span>View Digital Diploma</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ==================== 4. CALENDAR PANE ==================== -->
+          <div class="dash-pane" id="pane-calendar">
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem;">Academic Study Calendar</h2>
+
+            <div class="dash-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: #FFF;">August 2026</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">&larr; Prev</button>
+                  <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Next &rarr;</button>
+                </div>
+              </div>
+
+              <!-- Calendar Grid -->
+              <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Sun</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Mon</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Tue</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Wed</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Thu</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Fri</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Sat</div>
+
+                <!-- Calendar Days Sample -->
+                <div style="padding: 1rem; background: rgba(255,255,255,0.01); border-radius: 6px; font-size: 0.85rem; opacity: 0.3;">26</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.01); border-radius: 6px; font-size: 0.85rem; opacity: 0.3;">27</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.01); border-radius: 6px; font-size: 0.85rem; opacity: 0.3;">28</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.01); border-radius: 6px; font-size: 0.85rem; opacity: 0.3;">29</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.01); border-radius: 6px; font-size: 0.85rem; opacity: 0.3;">30</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.01); border-radius: 6px; font-size: 0.85rem; opacity: 0.3;">31</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">1</div>
+
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">2</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">3</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">4</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">5</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">6</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">7</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">8</div>
+
+                <!-- Active Day -->
+                <div style="padding: 1rem; background: rgba(6, 182, 212, 0.2); border: 1px solid var(--secondary-color); border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: #FFF;">
+                  9
+                  <span style="display: block; font-size: 0.6rem; color: #F87171; margin-top: 2px;">Lab Due</span>
+                </div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">10</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">11</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">12</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">13</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">14</div>
+                <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 0.85rem;">15</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== 5. MESSAGES PANE ==================== -->
+          <div class="dash-pane" id="pane-messages">
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem;">Instructor & Peer Messages</h2>
+
+            <div style="display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; height: 420px; background: rgba(11, 17, 32, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
+              <!-- Threads Sidebar -->
+              <div style="border-right: 1px solid var(--border-color); padding: 1rem;">
+                <div style="padding: 0.75rem; background: rgba(79, 70, 229, 0.15); border: 1px solid rgba(79, 70, 229, 0.3); border-radius: var(--radius-sm); margin-bottom: 0.5rem; cursor: pointer;">
+                  <strong style="color: #FFF; font-size: 0.85rem; display: block;">Dr. Evelyn Thorne</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">Senior AI Scientist</span>
+                </div>
+                <div style="padding: 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">
+                  <strong style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Liam Sterling</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary);">Cloud Architect</span>
+                </div>
+              </div>
+
+              <!-- Chat Conversation -->
+              <div style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem;">
+                <div style="overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;" id="chat-thread-box">
+                  <div style="align-self: flex-start; max-width: 80%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 12px; font-size: 0.85rem; color: var(--text-secondary);">
+                    Hi Jane! Your question on attention matrix dimension reduction was excellent. Make sure to review lesson 1.3 token embeddings before the final lab.
+                  </div>
+                  <div style="align-self: flex-end; max-width: 80%; background: var(--primary-color); padding: 0.85rem; border-radius: 12px; font-size: 0.85rem; color: #FFF;">
+                    Thank you Dr. Thorne! I am working on the terminal sandbox right now.
+                  </div>
+                </div>
+
+                <!-- Input box -->
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                  <input type="text" id="chat-input-field" placeholder="Type message to Dr. Evelyn Thorne..." style="flex-grow: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.65rem 1rem; color: #FFF; font-size: 0.85rem;" />
+                  <button class="btn btn-primary" id="chat-send-btn" style="padding: 0.65rem 1rem; font-size: 0.85rem;">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== 6. SETTINGS PANE ==================== -->
+          <div class="dash-pane" id="pane-settings">
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 2rem;">Account & Profile Settings</h2>
+
+            <form id="settings-profile-form" style="max-width: 550px;">
+              <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Full Name</label>
+                <input type="text" id="settings-user-name" value="Jane Doe" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.75rem 1rem; color: #FFF;" required />
+              </div>
+
+              <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Academic Email</label>
+                <input type="email" id="settings-user-email" value="jane.doe@learnsphere.edu" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.75rem 1rem; color: #FFF;" required />
+              </div>
+
+              <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Notification Preferences</label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #FFF; margin-bottom: 0.5rem;">
+                  <input type="checkbox" checked /> Email alerts for upcoming assignment deadlines
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #FFF;">
+                  <input type="checkbox" checked /> Instructor message notifications
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Save Settings</button>
+              <div id="settings-alert-msg" style="display: none; margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600;"></div>
+            </form>
+          </div>
+
+        </main>
+      </div>
+    </section>
+
+    <!-- Certificate Modal -->
+    <div class="modal" id="cert-modal">
+      <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3 style="font-family: var(--font-display); font-weight: 700;">Credential Explorer</h3>
+          <button class="modal-close" id="cert-modal-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 2.5rem;">
+          <div style="border: 4px double var(--secondary-color); padding: 2rem; border-radius: var(--radius-md); background: rgba(11, 17, 32, 0.95); position: relative; overflow: hidden;">
+            <h4 style="font-family: var(--font-display); font-size: 1.35rem; font-weight: 800; color: var(--secondary-light); margin-bottom: 0.5rem;">LEARNSPHERE CERTIFICATION</h4>
+            <span style="font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase;">Verified Academic Credential</span>
+            <div style="margin: 1.5rem 0; height: 1px; background: linear-gradient(90deg, transparent, var(--border-color), transparent);"></div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Certifies that</p>
+            <h3 style="font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; color: #FFF; margin-bottom: 0.75rem;" id="cert-modal-user-name">Jane Doe</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">has completed requirements for</p>
+            <h4 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--primary-light); margin-bottom: 2rem;" id="cert-modal-title-display">Diploma of LLM Prompt Architectures</h4>
+            <div style="font-family: 'Courier New', monospace; font-size: 0.7rem; color: var(--secondary-light);" id="cert-modal-hash-display">SHA-256: 8a9f23b1cde92a71f021e78</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+      document.addEventListener('DOMContentLoaded', () => {
+        // Sidebar Pane Switcher
+        const navBtns = document.querySelectorAll('.dash-nav-btn[data-target]');
+        const panes = document.querySelectorAll('.dash-pane');
+        const headerTitle = document.getElementById('pane-header-title');
+
+        const titleMap = {
+          'pane-dashboard': 'Student Dashboard',
+          'pane-my-courses': 'My Courses',
+          'pane-certificates': 'Certificates Vault',
+          'pane-calendar': 'Academic Calendar',
+          'pane-messages': 'Messages & Inbox',
+          'pane-settings': 'Account Settings'
+        };
+
+        function switchPane(targetId) {
+          navBtns.forEach(btn => {
+            if (btn.getAttribute('data-target') === targetId) btn.classList.add('active');
+            else btn.classList.remove('active');
+          });
+
+          panes.forEach(pane => {
+            if (pane.id === targetId) pane.classList.add('active');
+            else pane.classList.remove('active');
+          });
+
+          if (headerTitle && titleMap[targetId]) {
+            headerTitle.textContent = titleMap[targetId];
+          }
+        }
+
+        navBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-target');
+            if (target) switchPane(target);
+          });
+        });
+
+        // Quick triggers inside panes
+        document.querySelectorAll('.switch-pane-trigger').forEach(trig => {
+          trig.addEventListener('click', () => {
+            const target = trig.getAttribute('data-target-pane');
+            if (target) switchPane(target);
+          });
+        });
+
+        // Notifications Popover Toggle
+        const notifBtn = document.getElementById('notif-toggle-btn');
+        const notifPopover = document.getElementById('notif-popover');
+        const clearNotifs = document.getElementById('clear-notifs-btn');
+
+        if (notifBtn && notifPopover) {
+          notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifPopover.classList.toggle('active');
+          });
+
+          document.addEventListener('click', (e) => {
+            if (!notifPopover.contains(e.target) && !notifBtn.contains(e.target)) {
+              notifPopover.classList.remove('active');
+            }
+          });
+        }
+
+        if (clearNotifs) {
+          clearNotifs.addEventListener('click', () => {
+            document.querySelectorAll('.notif-item').forEach(item => item.classList.remove('unread'));
+            const badge = document.querySelector('.notif-badge-count');
+            if (badge) badge.style.display = 'none';
+          });
+        }
+
+        // Chat message send handler
+        const chatSend = document.getElementById('chat-send-btn');
+        const chatInput = document.getElementById('chat-input-field');
+        const chatThread = document.getElementById('chat-thread-box');
+
+        if (chatSend && chatInput && chatThread) {
+          chatSend.addEventListener('click', () => {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const msg = document.createElement('div');
+            msg.style.alignSelf = 'flex-end';
+            msg.style.maxWidth = '80%';
+            msg.style.background = 'var(--primary-color)';
+            msg.style.padding = '0.85rem';
+            msg.style.borderRadius = '12px';
+            msg.style.fontSize = '0.85rem';
+            msg.style.color = '#FFF';
+            msg.textContent = text;
+
+            chatThread.appendChild(msg);
+            chatInput.value = '';
+            chatThread.scrollTop = chatThread.scrollHeight;
+          });
+        }
+
+        // Pre-fill settings form & user profile displays
+        const currentUser = window.getAuthUser ? window.getAuthUser() : null;
+        if (currentUser) {
+          const nameInput = document.getElementById('settings-user-name');
+          const emailInput = document.getElementById('settings-user-email');
+          if (nameInput && currentUser.name) nameInput.value = currentUser.name;
+          if (emailInput && currentUser.email) emailInput.value = currentUser.email;
+
+          if (window.updateDashboardUserDisplays) {
+            window.updateDashboardUserDisplays(currentUser);
+          }
+        }
+
+        // Settings Form feedback & handler
+        const settingsForm = document.getElementById('settings-profile-form');
+        if (settingsForm) {
+          settingsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('settings-user-name');
+            const emailInput = document.getElementById('settings-user-email');
+            const alertMsg = document.getElementById('settings-alert-msg');
+
+            const newName = nameInput ? nameInput.value.trim() : '';
+            const newEmail = emailInput ? emailInput.value.trim() : '';
+
+            if (!newName) {
+              if (alertMsg) {
+                alertMsg.style.display = 'block';
+                alertMsg.style.background = 'rgba(239, 68, 68, 0.15)';
+                alertMsg.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                alertMsg.style.color = '#F87171';
+                alertMsg.textContent = 'Please enter a valid full name.';
+              }
+              return;
+            }
+
+            let user = window.getAuthUser ? window.getAuthUser() : null;
+            if (!user) user = { isLoggedIn: true };
+            user.name = newName;
+            user.email = newEmail;
+
+            if (window.setAuthUser) {
+              window.setAuthUser(user);
+            } else {
+              localStorage.setItem('learnsphere_user', JSON.stringify(user));
+            }
+
+            if (window.initNavbarAuth) {
+              window.initNavbarAuth();
+            }
+
+            if (window.updateDashboardUserDisplays) {
+              window.updateDashboardUserDisplays(user);
+            }
+
+            if (alertMsg) {
+              alertMsg.style.display = 'block';
+              alertMsg.style.background = 'rgba(16, 185, 129, 0.15)';
+              alertMsg.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+              alertMsg.style.color = '#34D399';
+              alertMsg.textContent = '✓ Profile settings updated and saved successfully!';
+
+              setTimeout(() => {
+                alertMsg.style.display = 'none';
+              }, 4000);
+            }
+          });
+        }
+
+        // Certificate modal triggers
+        const certModal = document.getElementById('cert-modal');
+        const certClose = document.getElementById('cert-modal-close');
+        const certTitleDisplay = document.getElementById('cert-modal-title-display');
+        const certHashDisplay = document.getElementById('cert-modal-hash-display');
+
+        document.querySelectorAll('.trigger-cert-modal-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const title = btn.getAttribute('data-title');
+            const hash = btn.getAttribute('data-hash');
+            if (certTitleDisplay) certTitleDisplay.textContent = title;
+            if (certHashDisplay) certHashDisplay.textContent = hash;
+            if (certModal) certModal.classList.add('active');
+          });
+        });
+
+        if (certClose && certModal) {
+          certClose.addEventListener('click', () => certModal.classList.remove('active'));
+          certModal.addEventListener('click', (e) => {
+            if (e.target === certModal) certModal.classList.remove('active');
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
